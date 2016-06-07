@@ -1,0 +1,5 @@
+ .gradle/
+ .idea/
+ build/
+ spring-uploading-files.iml
+
