@@ -28,20 +28,21 @@ public class UploadingResource {
 
         if (!file.isEmpty()) {
             try {
-                BufferedOutputStream stream = new BufferedOutputStream(
-                        new FileOutputStream(new File(Application.ROOT + "/" + fileName)));
+
+                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(Application.ROOT + "/" + fileName)));
                 FileCopyUtils.copy(file.getInputStream(), stream);
                 stream.close();
+
             } catch (Exception e) {
                 String message = "You failed to upload " + fileName + " => " + e.getMessage();
                 return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
-            String message = "You failed to upload " + fileName + " because the file was empty";
+            String message = "You failed to upload " + fileName + " because the file is empty.";
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("File uploaded.", HttpStatus.CREATED);
     }
 
 }

@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -19,6 +20,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Krzysztof Ziomek
@@ -48,7 +51,24 @@ public class UploadingResourceTest {
         ResponseEntity<String> result = formRestTemplate.exchange(FILES_URI, HttpMethod.POST, requestEntity, String.class);
 
         // then
-        Assert.assertEquals(HttpStatus.OK, result.getStatusCode());
+        Assert.assertEquals(HttpStatus.CREATED, result.getStatusCode());
+
+    }
+
+    @Test
+    public void uploadShouldUploadClassPathResource() throws Exception {
+
+        // given
+        Resource resource = new ClassPathResource("com/github/file_for_upload_test.txt");
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = MultipartFormDataBuilder.buildMultipartRequestEntity(new ImmutablePair<>(resource, MediaType.TEXT_PLAIN));
+
+        // when
+        ResponseEntity<String> result = formRestTemplate.exchange(FILES_URI, HttpMethod.POST, requestEntity, String.class);
+        String message = result.getBody();
+
+        // then
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertEquals("File uploaded.", message);
 
     }
 
