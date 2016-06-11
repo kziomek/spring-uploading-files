@@ -37,11 +37,11 @@ If you prefer more standardized Spring REST than Spring MVC you will benefit eve
   
 #### Run automatic tests
 
-    gradle test
+    ./gradlew test
   
 #### Start microservice app ?
 
-    gradle bootRun
+    ./gradlew bootRun
 
 #### Manual testing
 You can play a bit with uploader manually. Curl and html form examples are described below. 
