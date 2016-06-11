@@ -4,7 +4,7 @@
 ## What will you learn ?
 
 * upload files via Spring REST
-* upload huge files (streaming)
+* implement client to upload huge files (streaming)
 
 Implementation is based on Spring Boot 1.3.5.RELEASE
 
@@ -65,6 +65,30 @@ Under html directory you will find plain html form enctype="multipart/form-data"
 2. Upload file with uploadform.html
 3. Verify that file was uploaded into upload-dir
 
+
+## How to configure streaming working ?
+By default RestTemplate buffers file in memory before sending it to output stream.
+If you want to stream data directly from your resource
+you can create new RestTemplate bean with HttpComponentsClientHttpRequestFactory factory
+and set buffering request body to false.
+
+Don't forget to set BufferRequestBody to false. 
+
+Look at LocalClientConfig configuration.
+
+    @Bean
+        public RestTemplate formRestTemplate() {
+    
+            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+            requestFactory.setBufferRequestBody(false);
+    
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.setRequestFactory(requestFactory);
+    
+            return restTemplate;
+        }
+
+**On server side file is buffered in tmp file on disc.**
 
 ## Library
 

@@ -59,7 +59,7 @@ public class UploadingResourceTest {
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals("File uploaded.", message);
 
-        Path uploadedFilePath = Paths.get("upload-dir", tmpFile.getName());
+        Path uploadedFilePath = Paths.get(Application.ROOT, tmpFile.getName());
         assertTrue(Files.exists(uploadedFilePath));
 
         // tear down
@@ -82,7 +82,7 @@ public class UploadingResourceTest {
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals("File uploaded.", message);
 
-        Path uploadedFilePath = Paths.get("upload-dir", resource.getFilename());
+        Path uploadedFilePath = Paths.get(Application.ROOT, resource.getFilename());
         assertTrue(Files.exists(uploadedFilePath));
 
         // tear down
@@ -101,13 +101,13 @@ public class UploadingResourceTest {
 
         // execute
         ResponseEntity<String> result = formRestTemplate.exchange(FILES_URI, HttpMethod.POST, requestEntity, String.class);
-        String id = result.getBody();
+        String message = result.getBody();
 
         // assert
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        assertNotNull(result.getBody());
+        assertEquals("File uploaded.", message);
 
-        Path uploadedFilePath = Paths.get("upload-dir", resource.getFilename());
+        Path uploadedFilePath = Paths.get(Application.ROOT, resource.getFilename());
         assertTrue(Files.exists(uploadedFilePath));
         assertThat(fileBody.getBytes(), equalTo(Files.readAllBytes(uploadedFilePath)));
 
