@@ -26,7 +26,7 @@ public class MultipartFormDataBuilder {
         parts.add("file", buildFilePart(resource, contentType));
 
         if (resource.getFilename() != null) {
-            parts.add("filename", resource.getFilename());
+            parts.add("name", resource.getFilename());
         }
 
         return new HttpEntity<>(parts, multipartHeaders);

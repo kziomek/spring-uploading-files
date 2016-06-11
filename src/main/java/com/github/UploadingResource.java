@@ -23,22 +23,26 @@ import java.io.FileOutputStream;
 public class UploadingResource {
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<String> upload(@RequestPart(value = "filename") String fileName,
+    public ResponseEntity<String> upload(@RequestPart(value = "name", required = false) String name,
                                          @RequestPart(value = "file") MultipartFile file) {
+
+        if (name == null) {
+            name = file.getOriginalFilename();
+        }
 
         if (!file.isEmpty()) {
             try {
 
-                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(Application.ROOT + "/" + fileName)));
+                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(Application.ROOT + "/" + name)));
                 FileCopyUtils.copy(file.getInputStream(), stream);
                 stream.close();
 
             } catch (Exception e) {
-                String message = "You failed to upload " + fileName + " => " + e.getMessage();
+                String message = "You failed to upload " + name + " => " + e.getMessage();
                 return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
-            String message = "You failed to upload " + fileName + " because the file is empty.";
+            String message = "You failed to upload " + name + " because the file is empty.";
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
 
