@@ -20,6 +20,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,9 +52,17 @@ public class UploadingResourceTest {
 
         // when
         ResponseEntity<String> result = formRestTemplate.exchange(FILES_URI, HttpMethod.POST, requestEntity, String.class);
+        String message = result.getBody();
 
         // then
         Assert.assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertEquals("File uploaded.", message);
+
+        Path uploadedFilePath = Paths.get("upload-dir", tmpFile.getName());
+        Assert.assertTrue(Files.exists(uploadedFilePath));
+
+        // tear down
+        Files.delete(uploadedFilePath);
 
     }
 
@@ -69,6 +80,12 @@ public class UploadingResourceTest {
         // then
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals("File uploaded.", message);
+
+        Path uploadedFilePath = Paths.get("upload-dir", resource.getFilename());
+        Assert.assertTrue(Files.exists(uploadedFilePath));
+
+        // tear down
+        Files.delete(uploadedFilePath);
 
     }
 
