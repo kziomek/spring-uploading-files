@@ -64,3 +64,14 @@ Under html directory you will find plain html form enctype="multipart/form-data"
 1. Run microservice
 2. Upload file with uploadform.html
 3. Verify that file was uploaded into upload-dir
+
+
+## Library
+
+Simple Spring tutorial
+    
+    https://spring.io/guides/gs/uploading-files/
+    
+multipart/form-data specification
+    
+    https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2
