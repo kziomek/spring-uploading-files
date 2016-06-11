@@ -1,7 +1,7 @@
 package com.github;
 
+import com.github.io.ByteArrayAsFileResource;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.*;
 
 /**
  * @author Krzysztof Ziomek
@@ -55,11 +56,11 @@ public class UploadingResourceTest {
         String message = result.getBody();
 
         // then
-        Assert.assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertEquals("File uploaded.", message);
 
         Path uploadedFilePath = Paths.get("upload-dir", tmpFile.getName());
-        Assert.assertTrue(Files.exists(uploadedFilePath));
+        assertTrue(Files.exists(uploadedFilePath));
 
         // tear down
         Files.delete(uploadedFilePath);
@@ -82,11 +83,36 @@ public class UploadingResourceTest {
         assertEquals("File uploaded.", message);
 
         Path uploadedFilePath = Paths.get("upload-dir", resource.getFilename());
-        Assert.assertTrue(Files.exists(uploadedFilePath));
+        assertTrue(Files.exists(uploadedFilePath));
 
         // tear down
         Files.delete(uploadedFilePath);
 
+    }
+
+    @Test
+    public void uploadShouldUploadByteArrayAsFile() throws Exception {
+        String filename = "file.txt";
+        String fileBody = "This is plain String";
+
+        ByteArrayAsFileResource resource = new ByteArrayAsFileResource(fileBody.getBytes(), filename);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = MultipartFormDataBuilder.buildMultipartRequestEntity(new ImmutablePair<>(resource, MediaType.TEXT_PLAIN));
+
+        // execute
+        ResponseEntity<String> result = formRestTemplate.exchange(FILES_URI, HttpMethod.POST, requestEntity, String.class);
+        String id = result.getBody();
+
+        // assert
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertNotNull(result.getBody());
+
+        Path uploadedFilePath = Paths.get("upload-dir", resource.getFilename());
+        assertTrue(Files.exists(uploadedFilePath));
+        assertThat(fileBody.getBytes(), equalTo(Files.readAllBytes(uploadedFilePath)));
+
+        // tear down
+        Files.delete(uploadedFilePath);
     }
 
 
