@@ -19,6 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -113,6 +114,35 @@ public class UploadingResourceTest {
 
         // tear down
         Files.delete(uploadedFilePath);
+    }
+
+    @Test
+    public void uploadShouldUpload1GBFile() throws Exception {
+
+        // given
+        String filename = "huge";
+        RandomAccessFile randomAccessFile = new RandomAccessFile(filename, "rw");
+        randomAccessFile.setLength(1024 * 1024 * 1024);
+
+        Resource resource = new FileSystemResource(new File(filename));
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = MultipartFormDataBuilder.buildMultipartRequestEntity(new ImmutablePair<>(resource, MediaType.TEXT_PLAIN));
+
+        // when
+        ResponseEntity<String> result = formRestTemplate.exchange(FILES_URI, HttpMethod.POST, requestEntity, String.class);
+        String message = result.getBody();
+
+        // then
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertEquals("File uploaded.", message);
+
+        Path uploadedFilePath = Paths.get(Application.ROOT, resource.getFilename());
+        assertTrue(Files.exists(uploadedFilePath));
+        assertEquals(new File(filename).length(), uploadedFilePath.toFile().length());
+
+        // tear down
+        Files.delete(Paths.get(filename));
+        Files.delete(uploadedFilePath);
+
     }
 
 
