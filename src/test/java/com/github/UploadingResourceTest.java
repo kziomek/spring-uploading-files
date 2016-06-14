@@ -125,7 +125,7 @@ public class UploadingResourceTest {
         randomAccessFile.setLength(1024 * 1024 * 1024);
 
         Resource resource = new FileSystemResource(new File(filename));
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = MultipartFormDataBuilder.buildMultipartRequestEntity(new ImmutablePair<>(resource, MediaType.TEXT_PLAIN));
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = MultipartFormDataBuilder.buildMultipartRequestEntity(new ImmutablePair<>(resource, MediaType.APPLICATION_OCTET_STREAM));
 
         // when
         ResponseEntity<String> result = formRestTemplate.exchange(FILES_URI, HttpMethod.POST, requestEntity, String.class);
